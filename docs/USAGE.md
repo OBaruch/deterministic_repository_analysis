@@ -96,7 +96,7 @@ Exclusions are regular expressions matched against `Name <email>`. Keep the list
 
 ## PDF output
 
-PDF rendering uses a Chromium-based browser in headless mode. The toolkit searches for `msedge`, `microsoft-edge`, `google-chrome`, `chrome`, `chromium`, and `chromium-browser` on the `PATH` (and the default Edge and Chrome locations on Windows). Set `REPO_AUDIT_BROWSER` to an executable path to choose one explicitly. When running as root, for example in a container, the browser sandbox is disabled automatically because Chromium refuses to start otherwise.
+PDF rendering uses a Chromium-based browser in headless mode. On Windows the toolkit looks for Microsoft Edge first, then Chrome; on Linux and macOS it looks for `google-chrome`, `chromium`, `chromium-browser`, `chrome`, and then Microsoft Edge on the `PATH`. Set `REPO_AUDIT_BROWSER` to an executable name or path to choose one explicitly, and `REPO_AUDIT_BROWSER_ARGS` to pass extra browser flags (for example `--no-sandbox` on CI runners whose browser sandbox is not configured). When running as root, for example in a container, the sandbox is disabled automatically because Chromium refuses to start otherwise. The rendered HTML is generated locally, contains no scripts, and links only to files inside the output directory.
 
 ## Troubleshooting
 

@@ -32,6 +32,7 @@ First public release under the Apache License 2.0. This release hardens determin
 - `REPORT.md` states measured check results instead of fixed text (FR-RPT-05).
 - Subprocess output is decoded as UTF-8 on every platform (NFR-05).
 - `bootstrap-cloc` reuses a verified download without network access (FR-LOC-08).
+- PDF rendering prefers Chrome or Chromium on Linux and macOS and Edge on Windows, and accepts extra browser flags through `REPO_AUDIT_BROWSER_ARGS` (FR-RPT-04).
 - The read-only guard parses commands into tokens and Git subcommands, protects the workspace and output directories, supports Copilot CLI payloads, and denies with exit code 2 on every host (SEC-03 to SEC-05).
 - Agent adapters use only documented host fields: strict mode is passed as a guard argument, Claude subagents no longer run in plan mode (which prevented them from running commands), and Copilot hooks use the version 1 hook file format (AGT-05, AGT-06).
 

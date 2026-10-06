@@ -6,6 +6,7 @@ import csv
 import html
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -268,12 +269,23 @@ def build_html(output: Path, title: str) -> Path:
     return html_path
 
 
+WINDOWS_BROWSERS = ("msedge", "chrome", "chromium")
+POSIX_BROWSERS = (
+    "google-chrome",
+    "google-chrome-stable",
+    "chromium",
+    "chromium-browser",
+    "chrome",
+    "microsoft-edge",
+    "msedge",
+)
+
+
 def _browser() -> Path:
     configured = os.environ.get("REPO_AUDIT_BROWSER", "")
     candidates = [configured] if configured else []
-    candidates.extend(
-        ("msedge", "microsoft-edge", "google-chrome", "chrome", "chromium", "chromium-browser")
-    )
+    # Edge ships with Windows; on Linux and macOS, Chrome and Chromium are the common defaults.
+    candidates.extend(WINDOWS_BROWSERS if os.name == "nt" else POSIX_BROWSERS)
     for candidate in candidates:
         if not candidate:
             continue
@@ -310,6 +322,8 @@ def _browser_arguments(browser: Path, profile: str, pdf_path: Path, html_path: P
     # Chromium refuses to start as root (for example in containers) unless its sandbox is off.
     if hasattr(os, "geteuid") and os.geteuid() == 0:
         arguments.append("--no-sandbox")
+    # Extra flags for environments with restricted sandboxes, for example some CI runners.
+    arguments.extend(shlex.split(os.environ.get("REPO_AUDIT_BROWSER_ARGS", "")))
     arguments.extend((f"--print-to-pdf={pdf_path}", html_path.as_uri()))
     return arguments
 

@@ -71,6 +71,20 @@ class PdfTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "escapes output directory"):
             self.build("# Report\n\n[secret](../../etc/passwd)\n")
 
+    def test_browser_arguments_include_configured_extra_flags(self) -> None:
+        html_path = Path(tempfile.gettempdir()) / "report.html"
+        with mock.patch.dict(pdf.os.environ, {"REPO_AUDIT_BROWSER_ARGS": "--no-sandbox --lang=en"}):
+            arguments = pdf._browser_arguments(Path("chrome"), "p", Path("o.pdf"), html_path)
+        self.assertIn("--lang=en", arguments)
+        self.assertTrue(arguments[-1].startswith("file:"))
+
+    def test_browser_discovery_prefers_explicit_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            browser = Path(temporary) / "custom-browser"
+            browser.write_text("", encoding="utf-8")
+            with mock.patch.dict(pdf.os.environ, {"REPO_AUDIT_BROWSER": str(browser)}):
+                self.assertEqual(browser.resolve(), pdf._browser())
+
     def test_browser_arguments_disable_sandbox_only_for_root(self) -> None:
         html_path = Path(tempfile.gettempdir()) / "report.html"
         with mock.patch.object(pdf.os, "geteuid", create=True, return_value=0):
