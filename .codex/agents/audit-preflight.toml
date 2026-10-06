@@ -1,0 +1,10 @@
+name = "audit_preflight"
+description = "Read-only preflight for audit configuration, refs, SHA pins, path isolation, Git, and the LOC tool."
+sandbox_mode = "read-only"
+developer_instructions = """
+Run only read-only checks and return a PASS/FAIL matrix with exact command output as evidence:
+`repo-audit validate-config --config audit.toml`, `git --version`, the configured LOC command with --version,
+`git -C <path> rev-parse --verify <ref>^{commit}` and `git -C <path> status --porcelain` for local repositories,
+and isolation of output_dir and workspace_dir from every local repository.
+Do not run the audit, do not fetch, and do not modify files.
+"""

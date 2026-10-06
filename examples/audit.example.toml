@@ -1,0 +1,35 @@
+schema_version = 1
+title = "Engineering Repository Audit"
+output_dir = "../repo-audit-output"
+workspace_dir = "../repo-audit-workspace"
+generate_pdf = false
+require_clean = true
+# "branches-and-tags" (default) or "all-refs".
+history_scope = "branches-and-tags"
+
+[loc]
+# Paste the command and SHA-256 printed by `repo-audit bootstrap-cloc`.
+command = ["cloc"]
+expected_version = ""
+expected_sha256 = ""
+
+[developer]
+# Regular expressions matched against "Name <email>"; matching authors are excluded.
+exclude_patterns = []
+
+[developer.aliases]
+# "Alias Name <alias@example.com>" = "Canonical Name <canonical@example.com>"
+
+[[repositories]]
+name = "service-a"
+url = "https://git.example.com/example-org/service-a.git"
+ref = "main"
+expected_sha = ""
+fetch = true
+
+[[repositories]]
+name = "local-library"
+path = "../local-library"
+ref = "HEAD"
+expected_sha = ""
+fetch = false

@@ -1,0 +1,43 @@
+name: Bug report
+description: A result is wrong, a command fails, or the toolkit behaves differently than specs.md describes.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the report. **Do not include private repository data, real audit outputs, names, emails, or credentials.** Reduce the problem to a small synthetic repository whenever possible.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and the behavior you expected. Cite a requirement ID from specs.md if one applies.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Commands, a minimal audit.toml (with placeholder URLs), and how to create the repository that triggers the problem.
+      render: console
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Error output, failing rows from validation.csv, or `repo-audit verify --json` output, with sensitive values redacted.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Toolkit version
+      description: Output of `repo-audit --version`.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Python version, `git --version`, LOC tool version, and agent host (if relevant).
+    validations:
+      required: true

@@ -1,0 +1,13 @@
+Deterministic Repository Audit
+Copyright 2026 The Deterministic Repository Audit Authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party software
+--------------------
+
+cloc (https://github.com/AlDanial/cloc), Copyright (C) 2006-2026 Al Danial,
+is licensed under the GNU General Public License, version 2 or later. It is not
+included in this distribution. The `repo-audit bootstrap-cloc` command downloads
+the official cloc 2.10 release from its project page and verifies its SHA-256
+before use. cloc runs as a separate program and is not linked with this software.

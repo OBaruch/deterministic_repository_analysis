@@ -1,0 +1,19 @@
+{
+  "description": "Protect configured audit source repositories, workspace, and output from agent writes.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/read_only_guard.py\"",
+            "commandWindows": "py -3 \"$(git rev-parse --show-toplevel)/scripts/read_only_guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Enforcing repository audit read-only policy"
+          }
+        ]
+      }
+    ]
+  }
+}

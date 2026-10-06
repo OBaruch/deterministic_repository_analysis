@@ -1,0 +1,17 @@
+# Default owners for everything in the repository.
+* @OBaruch
+
+# Safety-critical areas: read-only enforcement, Git access, configuration, and formulas.
+/scripts/read_only_guard.py @OBaruch
+/src/repo_audit/gitops.py @OBaruch
+/src/repo_audit/config.py @OBaruch
+/src/repo_audit/metrics.py @OBaruch
+/.claude/ @OBaruch
+/.codex/ @OBaruch
+/.github/agents/ @OBaruch
+/.github/hooks/ @OBaruch
+
+# Source-of-truth documents.
+/intent.md @OBaruch
+/specs.md @OBaruch
+/plan.md @OBaruch

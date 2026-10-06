@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint and type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install development tools
+        run: python -m pip install -e ".[dev]"
+      - name: Ruff lint
+        run: ruff check .
+      - name: Ruff format
+        run: ruff format --check .
+      - name: Mypy (strict)
+        run: mypy
+
+  test:
+    name: Tests (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install package
+        run: python -m pip install .
+      - name: Compile sources
+        run: python -m compileall -q src scripts tests
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate example configuration
+        run: repo-audit validate-config --config examples/audit.example.toml
+
+  integration:
+    name: End-to-end audit with the official cloc
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install package
+        run: python -m pip install .
+      - name: Bootstrap pinned cloc
+        run: repo-audit bootstrap-cloc --directory "$RUNNER_TEMP/tools"
+      - name: Write audit configuration for this repository
+        run: |
+          cat > "$RUNNER_TEMP/audit.toml" <<EOF
+          schema_version = 1
+          title = "Self Audit"
+          output_dir = "$RUNNER_TEMP/output"
+          workspace_dir = "$RUNNER_TEMP/workspace"
+
+          [loc]
+          command = ["perl", "$RUNNER_TEMP/tools/cloc-2.10.pl"]
+          expected_version = "2.10"
+          expected_sha256 = "bf59272455172108072a0a106379f7509fd4349bdcfd85203bac038ccd286d83"
+
+          [[repositories]]
+          name = "toolkit"
+          path = "$GITHUB_WORKSPACE"
+          ref = "HEAD"
+          fetch = false
+          EOF
+      - name: Audit twice and require byte-identical outputs
+        run: |
+          repo-audit audit --config "$RUNNER_TEMP/audit.toml"
+          cp -r "$RUNNER_TEMP/output" "$RUNNER_TEMP/first-run"
+          repo-audit audit --config "$RUNNER_TEMP/audit.toml" --force
+          diff -r "$RUNNER_TEMP/first-run" "$RUNNER_TEMP/output"
+      - name: Verify outputs independently
+        run: repo-audit verify --config "$RUNNER_TEMP/audit.toml"
+      - name: Render PDF
+        run: |
+          repo-audit audit --config "$RUNNER_TEMP/audit.toml" --force --pdf
+          test -s "$RUNNER_TEMP/output/repo-audit-report.pdf"
+      - name: Confirm the audited repository is unchanged
+        run: test -z "$(git status --porcelain)"

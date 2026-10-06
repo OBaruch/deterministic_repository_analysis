@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "python3 scripts/read_only_guard.py",
+        "powershell": "py -3 scripts/read_only_guard.py",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose new behavior. Accepted proposals become requirements in specs.md before implementation.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What question can you not answer deterministically today, and who needs the answer?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the observable behavior, inputs, outputs, and how the result would be validated.
+    validations:
+      required: true
+  - type: checkboxes
+    id: intent
+    attributes:
+      label: Fit with intent.md
+      options:
+        - label: The proposal reports observed facts and does not estimate effort, cost, productivity, or rank people.
+          required: true
+        - label: The proposal keeps analyzed repositories read-only.
+          required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
