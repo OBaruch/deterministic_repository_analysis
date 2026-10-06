@@ -33,7 +33,7 @@ class LocTests(unittest.TestCase):
             {
                 "app.py": "print('one')\n\nprint('two')\n",
                 "copy/app.py": "print('one')\n\nprint('two')\n",
-                'odd, "quoted" name.py': "value = 1\n",
+                "odd, name's [1].py": "value = 1\n",
                 "empty.py": "",
                 "README.md": "# Example\n",
                 "logo.png": b"\x89PNG\r\n",
@@ -41,11 +41,9 @@ class LocTests(unittest.TestCase):
         )
         result = analyze_snapshot(resolve_loc_tool(fake_loc_config()), prepared, self.root / "raw")
         by_file = {str(row["File"]): row for row in result.files}
-        self.assertEqual(
-            {"app.py", "copy/app.py", 'odd, "quoted" name.py', "README.md"}, set(by_file)
-        )
+        self.assertEqual({"app.py", "copy/app.py", "odd, name's [1].py", "README.md"}, set(by_file))
         self.assertEqual(2, by_file["copy/app.py"]["Lines of Code"])
-        self.assertEqual(1, by_file['odd, "quoted" name.py']["Lines of Code"])
+        self.assertEqual(1, by_file["odd, name's [1].py"]["Lines of Code"])
         self.assertEqual(6, result.reported_code)
         self.assertEqual(4, result.reported_files)
         reasons = {str(row["File"]): row["Reason"] for row in result.exclusions}
